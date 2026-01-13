@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
-//import 'package:aura_x/Screens/init.dart';
-import 'package:audio_service/audio_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -63,45 +62,3 @@ Future<void> loadPlaylist(List<SongModel> songs, int startIndex) async {
     initialIndex: startIndex,
   );
 }
-
-
-
-class MyAudioHandler extends BaseAudioHandler
-    with QueueHandler, SeekHandler {
-
-  final AudioPlayer _player = AudioPlayer();
-
-  MyAudioHandler() {
-    _player.playbackEventStream.listen(_broadcastState);
-  }
-
-  @override
-  Future<void> play() => _player.play();
-
-  @override
-  Future<void> pause() => _player.pause();
-
-  Future<void> playSong(String path) async {
-    await _player.setAudioSource(AudioSource.uri(Uri.parse(path)));
-    play();
-  }
-
-  void _broadcastState(PlaybackEvent event) {
-    playbackState.add(
-      playbackState.value.copyWith(
-        playing: _player.playing,
-        controls: [
-          MediaControl.play,
-          MediaControl.pause,
-          MediaControl.stop,
-        ],
-      ),
-    );
-  }
-}
-
-
-
-
-
-
