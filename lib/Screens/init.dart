@@ -3,7 +3,6 @@ import 'package:aura_x/Screens/widget/maintile.dart';
 import 'package:aura_x/controller/audio_controller.dart';
 import 'package:aura_x/controller/song.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 List<SongModel> songs = [];
@@ -33,7 +32,6 @@ class _InitialPageState extends State<InitialPage> {
     super.dispose();
   }
 
-  
   Future<void> loadSongs() async {
     final result = await SongFunctions().fetchSongs();
     setState(() {
@@ -41,7 +39,6 @@ class _InitialPageState extends State<InitialPage> {
       allSongs = result;
     });
   }
-
 
   void onSearchChanged() {
     final query = textController.text.toLowerCase();
@@ -54,46 +51,20 @@ class _InitialPageState extends State<InitialPage> {
     });
   }
 
-  
-  Future<void> _playSong(int index) async {
-    await audioPlayer.stop();
-
-    currentQueue = songs;
-
-    final source = ConcatenatingAudioSource(
-      children: songs
-          .map((song) => AudioSource.uri(Uri.parse(song.data)))
-          .toList(),
-    );
-
-    await audioPlayer.setAudioSource(
-      source,
-      initialIndex: index,
-    );
-
-    if (isShuffleEnabled.value) {
-      await audioPlayer.shuffle();
-      await audioPlayer.setShuffleModeEnabled(true);
-    }
-
-    await audioPlayer.play();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-      
         Padding(
           padding: const EdgeInsets.all(12),
           child: TextFormField(
             controller: textController,
             decoration: InputDecoration(
               hintText: "Search songs",
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search, color: Colors.black54),
               suffixIcon: textController.text.isNotEmpty
                   ? IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Icons.close, color: Colors.black54),
                       onPressed: () {
                         textController.clear();
                         FocusScope.of(context).unfocus();
@@ -101,24 +72,23 @@ class _InitialPageState extends State<InitialPage> {
                     )
                   : null,
               filled: true,
-              fillColor: Colors.grey.shade900,
-              hintStyle: const TextStyle(color: Colors.white54),
+              fillColor: Colors.grey.shade200,
+              hintStyle: const TextStyle(color: Colors.black45),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
               ),
             ),
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black87),
           ),
         ),
 
-        
         Expanded(
           child: songs.isEmpty
               ? const Center(
                   child: Text(
                     "No Songs Found",
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Colors.black54),
                   ),
                 )
               : ListView.builder(
@@ -146,18 +116,17 @@ class _InitialPageState extends State<InitialPage> {
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade800,
+                              color: Colors.grey.shade300,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
                               Icons.music_note,
-                              color: Colors.white,
+                              color: Colors.black54,
                             ),
                           ),
                         ),
 
                         onTap: () {
-                          
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -165,8 +134,7 @@ class _InitialPageState extends State<InitialPage> {
                             ),
                           );
 
-                          
-                          _playSong(index);
+                          playSongs(songs: songs, startIndex: index);
                         },
                       ),
                     );

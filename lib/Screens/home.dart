@@ -1,12 +1,12 @@
 import 'package:aura_x/Screens/init.dart';
 import 'package:aura_x/Screens/musicpage.dart';
 import 'package:aura_x/Screens/playlist.dart';
+import 'package:aura_x/Screens/widget/songtile.dart';
 import 'package:aura_x/controller/audio_controller.dart';
-import 'package:aura_x/controller/color_palette.dart';
 import 'package:aura_x/controller/hive__functions.dart';
 import 'package:aura_x/models/playlist_model.dart';
-import 'package:aura_x/Screens/widget/songtile.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide PlaylistModel;
 
@@ -43,6 +43,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final textCtrl = TextEditingController();
+
     void onSave() {
       if (widget.playlist == null) {
         final playlist = PlaylistModel(title: textCtrl.text, songID: []);
@@ -58,30 +59,34 @@ class HomePageState extends State<HomePage> {
           return Form(
             key: formKey,
             child: AlertDialog(
-              title: Text("Create Playlist"),
+              backgroundColor: Colors.white,
+              title: const Text(
+                "Create Playlist",
+                style: TextStyle(color: Colors.black87),
+              ),
               content: TextFormField(
+                controller: textCtrl,
+                decoration: const InputDecoration(hintText: "Playlist name"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a name for your platylist';
+                    return 'Please enter a name';
                   }
                   return null;
                 },
-                controller: textCtrl,
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Cancel'),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       onSave();
+                      textCtrl.clear();
                     }
                   },
-                  child: Text('Save'),
+                  child: const Text("Save"),
                 ),
               ],
             ),
@@ -97,20 +102,20 @@ class HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+
+        title: selectedIndex == 0
+            ? Text("Aura X", style: GoogleFonts.goldman(fontSize: 35))
+            : null,
+        centerTitle: true,
+
         actions: selectedIndex == 1
-            ? [
-                IconButton(
-                  onPressed: () {
-                    addPlayList();
-                  },
-                  icon: Icon(Icons.add),
-                  color: Colors.white,
-                ),
-              ]
+            ? [IconButton(onPressed: addPlayList, icon: const Icon(Icons.add))]
             : [],
-        animateColor: false,
-        backgroundColor: const Color.fromARGB(255, 71, 71, 71),
       ),
+
       body: Stack(
         children: [
           pages[selectedIndex],
@@ -134,8 +139,9 @@ class HomePageState extends State<HomePage> {
                 bottom: 12,
                 child: MusicTile(
                   title: song.title,
-                  subtitle: song.artist ?? "Unknown",
-                  backgroundColor: const Color.fromARGB(255, 57, 57, 57),
+                  subtitle: song.artist ?? "Unknown Artist",
+
+                  backgroundColor: const Color.fromARGB(255, 205, 238, 255),
 
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -147,10 +153,13 @@ class HomePageState extends State<HomePage> {
                       nullArtworkWidget: Container(
                         width: 45,
                         height: 45,
-                        color: Colors.deepPurple,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: const Icon(
                           Icons.music_note,
-                          color: Colors.white,
+                          color: Colors.black54,
                         ),
                       ),
                     ),
@@ -164,7 +173,7 @@ class HomePageState extends State<HomePage> {
                       return IconButton(
                         icon: Icon(
                           playing ? Icons.pause : Icons.play_arrow,
-                          color: accent,
+                          color: Colors.deepPurple,
                           size: 30,
                         ),
                         onPressed: () {
@@ -186,14 +195,15 @@ class HomePageState extends State<HomePage> {
           ),
         ],
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
-        onTap: (index) => setState(() {
-          selectedIndex = index;
-        }),
+        onTap: (index) => setState(() => selectedIndex = index),
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        unselectedItemColor: Colors.white,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.deepPurple,
+        unselectedItemColor: Colors.black45,
+        elevation: 8,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           BottomNavigationBarItem(

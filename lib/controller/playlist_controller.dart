@@ -62,15 +62,87 @@ void toggleSongInPlaylist(PlaylistModel playlist, int songId) {
   playlist.save();
 }
 
-void addToLikedSongs(SongModel song) {
-  final box = Hive.box<PlaylistModel>('playbox');
 
-  final likedPlaylist =
-      box.values.firstWhere((p) => p.isDefault);
 
-  if (!likedPlaylist.songID.contains(song.id)) {
-    likedPlaylist.songID.add(song.id);
-    likedPlaylist.save();
-  }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// void addToLikedSongs(SongModel song) {
+//   final box = Hive.box<PlaylistModel>('playbox');
+
+//   final likedPlaylist =
+//       box.values.firstWhere((p) => p.isDefault);
+
+//   if (!likedPlaylist.songID.contains(song.id)) {
+//     likedPlaylist.songID.add(song.id);
+//     likedPlaylist.save();
+//   }
+// }
 

@@ -3,7 +3,6 @@ part 'playlist_model.g.dart';
 
 @HiveType(typeId: 0)
 class PlaylistModel extends HiveObject {
-
   @HiveField(0)
   String title;
 
@@ -13,10 +12,7 @@ class PlaylistModel extends HiveObject {
   @HiveField(2)
   bool isDefault;
 
-  PlaylistModel({
-    required this.title,
-    List<int>? songID,
-    bool? isDefault,
-  })  : songID = songID ?? [],
-        isDefault = isDefault ?? false;
+  PlaylistModel({required this.title, List<int>? songID, bool? isDefault})
+    : songID = songID ?? [],
+      isDefault = isDefault ?? false;
 }

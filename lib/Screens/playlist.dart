@@ -17,19 +17,19 @@ class PlaylistPage extends StatelessWidget {
       builder: (context, box, _) {
         final playlists = box.values.toList();
 
-        if (playlists.isEmpty) {
-          return const Center(
-            child: Text(
-              "No playlists yet",
-              style: TextStyle(color: Colors.white70),
-            ),
-          );
-        }
+        // if (playlists.isEmpty) {
+        //   return const Center(
+        //     child: Text(
+        //       "No playlists yet",
+        //       style: TextStyle(color: Colors.white70),
+        //     ),
+        //   );
+        // }
 
         return ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
           itemCount: playlists.length,
-          separatorBuilder: (_, _ ) => const SizedBox(height: 14),
+          separatorBuilder: (_, _) => const SizedBox(height: 14),
           itemBuilder: (context, index) {
             final playlist = playlists[index];
 

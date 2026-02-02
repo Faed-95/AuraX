@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:palette_generator/palette_generator.dart';
 
@@ -14,6 +14,21 @@ ValueNotifier<Color> dominantColorNotifier = ValueNotifier<Color>(Colors.black);
 List<SongModel> currentQueue = [];
 
 final OnAudioQuery _audioQuery = OnAudioQuery();
+
+AudioSource songToAudioSource(SongModel song) {
+  return AudioSource.uri(
+    Uri.parse(song.data),
+    tag: MediaItem(
+      id: song.id.toString(),
+      title: song.title,
+      artist: song.artist ?? "Unknown Artist",
+      album: song.album ?? "Unknown Album",
+      artUri: Uri.parse(
+        "content://media/external/audio/albumart/${song.albumId}",
+      ),
+    ),
+  );
+}
 
 Future<void> updateDominantColor(SongModel song) async {
   try {
@@ -35,7 +50,7 @@ Future<void> updateDominantColor(SongModel song) async {
     );
 
     dominantColorNotifier.value = palette.dominantColor?.color ?? Colors.black;
-  } catch (e) {
+  } catch (_) {
     dominantColorNotifier.value = Colors.black;
   }
 }
@@ -53,12 +68,32 @@ Future<void> enableShuffle(bool enable) async {
 }
 
 Future<void> loadPlaylist(List<SongModel> songs, int startIndex) async {
-  final playlist = songs.map((song) {
-    return AudioSource.uri(Uri.parse(song.data));
-  }).toList();
+  final playlist = songs.map(songToAudioSource).toList();
 
   await audioPlayer.setAudioSource(
     ConcatenatingAudioSource(children: playlist),
     initialIndex: startIndex,
   );
+}
+
+Future<void> playSongs({
+  required List<SongModel> songs,
+  required int startIndex,
+}) async {
+  await audioPlayer.stop();
+
+  currentQueue = songs;
+
+  final source = ConcatenatingAudioSource(
+    children: songs.map(songToAudioSource).toList(),
+  );
+
+  await audioPlayer.setAudioSource(source, initialIndex: startIndex);
+
+  if (isShuffleEnabled.value) {
+    await audioPlayer.shuffle();
+    await audioPlayer.setShuffleModeEnabled(true);
+  }
+
+  await audioPlayer.play();
 }

@@ -5,7 +5,7 @@ class MusicTile extends StatelessWidget {
   final String subtitle;
   final Widget leading;
   final Widget trailing;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color backgroundColor;
 
   const MusicTile({
@@ -14,25 +14,48 @@ class MusicTile extends StatelessWidget {
     required this.subtitle,
     required this.leading,
     required this.trailing,
-    required this.onTap,
-    this.backgroundColor = const Color(0xFF141413),
+    this.onTap,
+    required this.backgroundColor,
   });
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return Material(
-      color: backgroundColor,
-      borderRadius: BorderRadius.circular(18),
+      color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
         onTap: onTap,
-        child: Padding(
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+
+            
+            boxShadow: const [
+              BoxShadow(
+                color: Color.fromARGB(20, 0, 0, 0),
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
+
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Row(
             children: [
-              leading,
+             
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 45,
+                  height: 45,
+                  child: leading,
+                ),
+              ),
+
               const SizedBox(width: 12),
 
+             
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,18 +65,18 @@ class MusicTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87, 
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: Colors.white70,
+                        color: Colors.black54,
                         fontSize: 12,
                       ),
                     ),
@@ -61,6 +84,7 @@ class MusicTile extends StatelessWidget {
                 ),
               ),
 
+             
               trailing,
             ],
           ),

@@ -24,24 +24,25 @@ class MainTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFF161616),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(14),
+            boxShadow: const [
+              BoxShadow(
+                color: Color.fromARGB(13, 0, 0, 0),
+                blurRadius: 8,
+                offset: Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             children: [
-              
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: leading,
-                ),
+                child: SizedBox(width: 50, height: 50, child: leading),
               ),
 
               const SizedBox(width: 12),
 
-              
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,7 +52,7 @@ class MainTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
@@ -61,20 +62,13 @@ class MainTile extends StatelessWidget {
                       subtitle ?? "Unknown Artist",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.grey.shade400,
+                      style: const TextStyle(
+                        color: Colors.black54,
                         fontSize: 12,
                       ),
                     ),
                   ],
                 ),
-              ),
-
-              
-              const Icon(
-                Icons.more_vert,
-                color: Colors.white38,
-                size: 18,
               ),
             ],
           ),

@@ -19,7 +19,6 @@ class Musicpage extends StatelessWidget {
         return Scaffold(
           backgroundColor: Colors.black,
 
-          
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -33,7 +32,6 @@ class Musicpage extends StatelessWidget {
             ),
           ),
 
-         
           body: StreamBuilder<int?>(
             stream: audioPlayer.currentIndexStream,
             builder: (context, snapshot) {
@@ -49,14 +47,12 @@ class Musicpage extends StatelessWidget {
 
               final song = currentQueue[index];
 
-              
               updateDominantColor(song);
 
               final title = song.title.length > 40
                   ? '${song.title.substring(0, 40)}...'
                   : song.title;
 
-              
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 500),
                 decoration: BoxDecoration(
@@ -67,12 +63,11 @@ class Musicpage extends StatelessWidget {
                   ),
                 ),
                 child: SingleChildScrollView(
-                 // physics: const BouncingScrollPhysics(),
+                  // physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       const SizedBox(height: 16),
 
-                     
                       Center(
                         child: Container(
                           width: 320,
@@ -108,7 +103,6 @@ class Musicpage extends StatelessWidget {
 
                       const SizedBox(height: 24),
 
-                      
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
@@ -139,7 +133,6 @@ class Musicpage extends StatelessWidget {
                         child: ProgressBarr(player: audioPlayer),
                       ),
 
-                   
                       Align(
                         alignment: Alignment.centerRight,
                         child: Padding(
@@ -189,7 +182,6 @@ class Musicpage extends StatelessWidget {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              
                               ValueListenableBuilder<LoopMode>(
                                 valueListenable: loopModeNotifier,
                                 builder: (context, mode, _) {
@@ -225,7 +217,6 @@ class Musicpage extends StatelessWidget {
                                 ),
                               ),
 
-                              
                               MusicButton(
                                 onPressed: () {
                                   playing
@@ -248,7 +239,6 @@ class Musicpage extends StatelessWidget {
                                 ),
                               ),
 
-                             
                               ValueListenableBuilder<bool>(
                                 valueListenable: isShuffleEnabled,
                                 builder: (context, enabled, _) {

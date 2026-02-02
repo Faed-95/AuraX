@@ -1,9 +1,9 @@
 import 'package:aura_x/Screens/musicpage.dart';
 import 'package:aura_x/Screens/widget/maintile.dart';
+import 'package:aura_x/Screens/widget/songtile.dart';
 import 'package:aura_x/controller/audio_controller.dart';
 import 'package:aura_x/controller/color_palette.dart';
 import 'package:aura_x/models/playlist_model.dart';
-import 'package:aura_x/Screens/widget/songtile.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide PlaylistModel;
@@ -19,7 +19,6 @@ class DetailList extends StatefulWidget {
 
 class _DetailListState extends State<DetailList> {
   final OnAudioQuery _audioQuery = OnAudioQuery();
-  final AudioPlayer _audioPlayer = audioPlayer;
 
   List<SongModel> playlistSongs = [];
   bool isLoading = true;
@@ -43,26 +42,6 @@ class _DetailListState extends State<DetailList> {
 
     setState(() => isLoading = false);
   }
-
- Future<void> _playSong(int index) async {
-    await _audioPlayer.stop();
-    currentQueue = playlistSongs;
-
-    final source = ConcatenatingAudioSource(
-      children: playlistSongs
-          .map((song) => AudioSource.uri(Uri.parse(song.data)))
-          .toList(),
-    );
-
-    await _audioPlayer.setAudioSource(source, initialIndex: index);
-    if (isShuffleEnabled.value) {
-      await audioPlayer.shuffle();
-      await audioPlayer.setShuffleModeEnabled(true);
-    }
-
-    await _audioPlayer.play();
-  }
- 
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +71,7 @@ class _DetailListState extends State<DetailList> {
                             ),
                           );
 
-                          _playSong(index);
+                          playSongs(songs: playlistSongs, startIndex: index);
                         },
 
                         child: MainTile(
@@ -131,9 +110,8 @@ class _DetailListState extends State<DetailList> {
                 child: MusicTile(
                   title: song.title,
                   subtitle: song.artist ?? "Unknown",
-                  backgroundColor: const Color.fromARGB(255, 57, 57, 57),
+                  backgroundColor: const Color.fromARGB(255, 189, 245, 255),
 
-                  
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: QueryArtworkWidget(
@@ -153,7 +131,6 @@ class _DetailListState extends State<DetailList> {
                     ),
                   ),
 
-                  
                   trailing: StreamBuilder<PlayerState>(
                     stream: audioPlayer.playerStateStream,
                     builder: (context, snapshot) {
