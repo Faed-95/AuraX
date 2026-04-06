@@ -5,11 +5,11 @@ import 'package:rxdart/rxdart.dart';
 
 class DurationState {
   final Duration progress;
-  final Duration buffered;
+  // final Duration buffered;
   final Duration total;
   DurationState({
     required this.progress,
-    required this.buffered,
+    // required this.buffered,
     required this.total,
   });
 }
@@ -21,7 +21,7 @@ Stream<DurationState> durationStateStream(AudioPlayer player) {
     player.durationStream,
     (position, buffered, total) => DurationState(
       progress: position,
-      buffered: buffered,
+      // buffered: buffered,
       total: total ?? Duration.zero,
     ),
   );
@@ -59,11 +59,11 @@ class ProgressBarr extends StatelessWidget {
             ? total
             : state.progress;
 
-        final buffered = state == null
-            ? Duration.zero
-            : state.buffered > total
-            ? total
-            : state.buffered;
+        // final buffered = state == null
+        //     ? Duration.zero
+        //     : state.buffered > total
+        //     ? total
+        //     : state.buffered;
 
         return Column(
           children: [
@@ -76,7 +76,7 @@ class ProgressBarr extends StatelessWidget {
             // ),
             ProgressBar(
               progress: progress,
-              buffered: buffered,
+              // buffered: buffered,
               total: total,
               barHeight: 3,
               thumbRadius: 7,

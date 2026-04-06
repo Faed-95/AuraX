@@ -4,9 +4,11 @@ import 'package:aura_x/Screens/widget/songtile.dart';
 import 'package:aura_x/controller/audio_controller.dart';
 import 'package:aura_x/controller/color_palette.dart';
 import 'package:aura_x/models/playlist_model.dart';
+import 'package:aura_x/providers/detaillist_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide PlaylistModel;
+import 'package:provider/provider.dart';
 
 class DetailList extends StatefulWidget {
   final PlaylistModel playlist;
@@ -18,49 +20,35 @@ class DetailList extends StatefulWidget {
 }
 
 class _DetailListState extends State<DetailList> {
-  final OnAudioQuery _audioQuery = OnAudioQuery();
-
-  List<SongModel> playlistSongs = [];
-  bool isLoading = true;
-
   @override
   void initState() {
     super.initState();
-    _loadPlaylistSongs();
-  }
 
-  Future<void> _loadPlaylistSongs() async {
-    final allSongs = await _audioQuery.querySongs(
-      uriType: UriType.EXTERNAL,
-      sortType: SongSortType.TITLE,
-      orderType: OrderType.ASC_OR_SMALLER,
-    );
-
-    playlistSongs = allSongs
-        .where((song) => widget.playlist.songID.contains(song.id))
-        .toList();
-
-    setState(() => isLoading = false);
+    Future.microtask(() {
+      context.read<DetailProvider>().loadPlaylistSongs(widget.playlist);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final detailProvider = context.watch<DetailProvider>();
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.playlist.title)),
       body: Stack(
         children: [
           Padding(
             padding: const EdgeInsets.only(bottom: 80),
-            child: isLoading
+            child: detailProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : playlistSongs.isEmpty
+                : detailProvider.playlistSongs.isEmpty
                 ? const Center(child: Text("No songs in this playlist"))
                 : ListView.separated(
                     padding: const EdgeInsets.all(12),
-                    itemCount: playlistSongs.length,
+                    itemCount: detailProvider.playlistSongs.length,
                     separatorBuilder: (_, _) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
-                      final song = playlistSongs[index];
+                      final song = detailProvider.playlistSongs[index];
 
                       return GestureDetector(
                         onTap: () {
@@ -71,7 +59,10 @@ class _DetailListState extends State<DetailList> {
                             ),
                           );
 
-                          playSongs(songs: playlistSongs, startIndex: index);
+                          playSongs(
+                            songs: detailProvider.playlistSongs,
+                            startIndex: index,
+                          );
                         },
 
                         child: MainTile(

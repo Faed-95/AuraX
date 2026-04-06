@@ -2,6 +2,7 @@ import 'package:aura_x/Screens/widget/musicbutton.dart';
 import 'package:aura_x/Screens/widget/progressbar1.dart';
 import 'package:aura_x/controller/audio_controller.dart';
 import 'package:aura_x/controller/playlist_controller.dart';
+
 import 'package:aura_x/models/playlist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -63,7 +64,7 @@ class Musicpage extends StatelessWidget {
                   ),
                 ),
                 child: SingleChildScrollView(
-                  // physics: const BouncingScrollPhysics(),
+                  
                   child: Column(
                     children: [
                       const SizedBox(height: 16),

@@ -5,10 +5,13 @@ import 'package:aura_x/Screens/widget/songtile.dart';
 import 'package:aura_x/controller/audio_controller.dart';
 import 'package:aura_x/controller/hive__functions.dart';
 import 'package:aura_x/models/playlist_model.dart';
+import 'package:aura_x/providers/home_provider.dart';
+import 'package:aura_x/providers/init_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide PlaylistModel;
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final PlaylistModel? playlist;
@@ -21,18 +24,10 @@ class HomePage extends StatefulWidget {
 final formKey = GlobalKey<FormState>();
 
 class HomePageState extends State<HomePage> {
-  int selectedIndex = 0;
-  SongModel? currentSong;
-
   Future<void> openMusicPage(SongModel song) async {
-    final startIndex = songs.indexWhere((s) => s.id == song.id);
+    final initProvider = context.read<InitProvider>();
 
-    setState(() {
-      currentSong = song;
-    });
-
-    await loadPlaylist(songs, startIndex);
-    await audioPlayer.play();
+    await context.read<HomePageProvider>().playSong(initProvider.songs, song);
 
     Navigator.push(
       context,
@@ -42,11 +37,14 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final textCtrl = TextEditingController();
+    final homeProvider = context.watch<HomePageProvider>();
 
     void onSave() {
       if (widget.playlist == null) {
-        final playlist = PlaylistModel(title: textCtrl.text, songID: []);
+        final playlist = PlaylistModel(
+          title: homeProvider.textCtrl.text,
+          songID: [],
+        );
         HiveFunctions.add(playlist);
       }
       Navigator.pop(context);
@@ -65,7 +63,7 @@ class HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.black87),
               ),
               content: TextFormField(
-                controller: textCtrl,
+                controller: homeProvider.textCtrl,
                 decoration: const InputDecoration(hintText: "Playlist name"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -83,7 +81,7 @@ class HomePageState extends State<HomePage> {
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       onSave();
-                      textCtrl.clear();
+                      homeProvider.textCtrl.clear();
                     }
                   },
                   child: const Text("Save"),
@@ -106,19 +104,19 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
 
-        title: selectedIndex == 0
+        title: homeProvider.selectedIndex == 0
             ? Text("Aura X", style: GoogleFonts.goldman(fontSize: 35))
             : null,
         centerTitle: true,
 
-        actions: selectedIndex == 1
+        actions: homeProvider.selectedIndex == 1
             ? [IconButton(onPressed: addPlayList, icon: const Icon(Icons.add))]
             : [],
       ),
 
       body: Stack(
         children: [
-          pages[selectedIndex],
+          pages[homeProvider.selectedIndex],
 
           StreamBuilder<int?>(
             stream: audioPlayer.currentIndexStream,
@@ -197,8 +195,8 @@ class HomePageState extends State<HomePage> {
       ),
 
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) => setState(() => selectedIndex = index),
+        currentIndex: homeProvider.selectedIndex,
+        onTap: (index) => context.read<HomePageProvider>().changeIndex(index),
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: Colors.deepPurple,

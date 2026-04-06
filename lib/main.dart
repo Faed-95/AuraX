@@ -1,9 +1,14 @@
 import 'package:aura_x/Screens/home.dart';
 import 'package:aura_x/Screens/onboarding.dart';
 import 'package:aura_x/models/playlist_model.dart';
+import 'package:aura_x/providers/detaillist_provider.dart';
+import 'package:aura_x/providers/home_provider.dart';
+import 'package:aura_x/providers/init_provider.dart';
+import 'package:aura_x/providers/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> createDefaultPlaylist() async {
@@ -31,7 +36,19 @@ void main() async {
     androidNotificationChannelName: 'Audio Playback',
     androidNotificationOngoing: true,
   );
-  runApp(MyApp(showOnBoarding: showOnBoarding));
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context)=>HomePageProvider()),
+        ChangeNotifierProvider(create: (context)=>InitProvider()),
+        ChangeNotifierProvider(create: (context)=>DetailProvider()),
+        ChangeNotifierProvider(create: (context)=>OnBoardingProvider()),
+        
+      ],
+      child: MyApp(showOnBoarding: showOnBoarding),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -43,102 +60,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: showOnBoarding ? OnBoarding() : HomePage(),
-      theme: ThemeData(scaffoldBackgroundColor: const Color.fromARGB(255, 239, 239, 239)),
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color.fromARGB(255, 239, 239, 239),
+      ),
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- // if (Mp.show)
-          //   Positioned(
-          //     child: MusicTile(
-          //       // color: Colors.blue,
-          //       title: Mp.title!,
-          //       subtitle: Mp.subtitle!,
-          //       cover: Mp.cover!,
-          //     ),
-          //   ),

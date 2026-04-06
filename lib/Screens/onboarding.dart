@@ -1,22 +1,21 @@
 import 'package:aura_x/Screens/home.dart';
 import 'package:aura_x/Screens/widget/pages.dart';
+import 'package:aura_x/providers/onboarding_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OnBoarding extends StatefulWidget {
-  const OnBoarding({super.key});
+class OnBoarding extends StatelessWidget {
+   OnBoarding({super.key});
 
-  @override
-  State<OnBoarding> createState() => _OnBoardingState();
-}
-
-class _OnBoardingState extends State<OnBoarding> {
   final PageController controller = PageController();
-  bool isLastPage = false;
+
+  //bool isLastPage = false;
   var currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final onBoardingProvider = context.watch<OnBoardingProvider>();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -26,10 +25,7 @@ class _OnBoardingState extends State<OnBoarding> {
               child: PageView(
                 controller: controller,
                 onPageChanged: (index) {
-                  setState(() {
-                    currentIndex = index;
-                    isLastPage = index == 2;
-                  });
+               context.read<OnBoardingProvider>().updateIndex(index);
                 },
                 children: const [
                   OnBoardingPage(
@@ -61,7 +57,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 (index) => AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: isLastPage && index == 2 ? 18 : 8,
+                  width: onBoardingProvider.isLastPage && index == 2 ? 18 : 8,
                   height: 8,
                   decoration: BoxDecoration(
                     color: currentIndex == index
@@ -81,7 +77,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      if (isLastPage) {
+                      if (onBoardingProvider.isLastPage) {
                         controller.jumpToPage(0);
                       } else {
                         controller.jumpToPage(2);
@@ -91,14 +87,14 @@ class _OnBoardingState extends State<OnBoarding> {
                       foregroundColor: Colors.black54,
                       textStyle: const TextStyle(fontSize: 16),
                     ),
-                    child: Text(isLastPage ? 'Back' : 'Skip'),
+                    child: Text(onBoardingProvider.isLastPage ? 'Back' : 'Skip'),
                   ),
 
                   const Spacer(),
 
                   ElevatedButton(
                     onPressed: () async {
-                      if (!isLastPage) {
+                      if (!onBoardingProvider.isLastPage) {
                         controller.nextPage(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeOut,
@@ -135,7 +131,7 @@ class _OnBoardingState extends State<OnBoarding> {
                           vertical: 16,
                         ),
                         child: Text(
-                          isLastPage ? 'Start Listening' : 'Next',
+                          onBoardingProvider.isLastPage ? 'Start Listening' : 'Next',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,

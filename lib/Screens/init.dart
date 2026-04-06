@@ -2,71 +2,32 @@ import 'package:aura_x/Screens/musicpage.dart';
 import 'package:aura_x/Screens/widget/maintile.dart';
 import 'package:aura_x/controller/audio_controller.dart';
 import 'package:aura_x/controller/song.dart';
+import 'package:aura_x/providers/init_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
 
-List<SongModel> songs = [];
-List<SongModel> allSongs = [];
-
-class InitialPage extends StatefulWidget {
+class InitialPage extends StatelessWidget {
   final Function(SongModel) onMusicOpen;
   const InitialPage({super.key, required this.onMusicOpen});
 
   @override
-  State<InitialPage> createState() => _InitialPageState();
-}
-
-class _InitialPageState extends State<InitialPage> {
-  final TextEditingController textController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    loadSongs();
-    textController.addListener(onSearchChanged);
-  }
-
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
-
-  Future<void> loadSongs() async {
-    final result = await SongFunctions().fetchSongs();
-    setState(() {
-      songs = result;
-      allSongs = result;
-    });
-  }
-
-  void onSearchChanged() {
-    final query = textController.text.toLowerCase();
-    setState(() {
-      songs = allSongs.where((song) {
-        final title = song.title.toLowerCase();
-        final artist = (song.artist ?? "").toLowerCase();
-        return title.contains(query) || artist.contains(query);
-      }).toList();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final initProvider = context.watch<InitProvider>();
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(12),
           child: TextFormField(
-            controller: textController,
+            controller: initProvider.textCtrl,
             decoration: InputDecoration(
               hintText: "Search songs",
               prefixIcon: const Icon(Icons.search, color: Colors.black54),
-              suffixIcon: textController.text.isNotEmpty
+              suffixIcon: initProvider.textCtrl.text.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.close, color: Colors.black54),
                       onPressed: () {
-                        textController.clear();
+                        initProvider.textCtrl.clear();
                         FocusScope.of(context).unfocus();
                       },
                     )
@@ -84,7 +45,7 @@ class _InitialPageState extends State<InitialPage> {
         ),
 
         Expanded(
-          child: songs.isEmpty
+          child: initProvider.songs.isEmpty
               ? const Center(
                   child: Text(
                     "No Songs Found",
@@ -93,9 +54,9 @@ class _InitialPageState extends State<InitialPage> {
                 )
               : ListView.builder(
                   padding: const EdgeInsets.only(bottom: 90),
-                  itemCount: songs.length,
+                  itemCount: initProvider.songs.length,
                   itemBuilder: (context, index) {
-                    final song = songs[index];
+                    final song = initProvider.songs[index];
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(
@@ -133,8 +94,7 @@ class _InitialPageState extends State<InitialPage> {
                               builder: (_) => const Musicpage(),
                             ),
                           );
-
-                          playSongs(songs: songs, startIndex: index);
+                          playSongs(songs: initProvider.songs, startIndex: index);
                         },
                       ),
                     );
