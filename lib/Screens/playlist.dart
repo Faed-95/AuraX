@@ -33,36 +33,51 @@ class PlaylistPage extends StatelessWidget {
           itemBuilder: (context, index) {
             final playlist = playlists[index];
 
-            return Slidable(
-              key: ValueKey(playlist.key),
+            return TweenAnimationBuilder(
+              duration: Duration(milliseconds: 400 + (index * 60)),
+              tween: Tween<double>(begin: 0, end: 1),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Transform.translate(
+                    offset: Offset(0, (1 - value) * 20),
+                    child: child,
+                  ),
+                );
+              },
 
-              endActionPane: playlist.isDefault
-                  ? null
-                  : ActionPane(
-                      motion: const StretchMotion(),
-                      children: [
-                        SlidableAction(
-                          onPressed: (_) {
-                            box.delete(playlist.key);
-                          },
-                          icon: Icons.delete_outline,
-                          backgroundColor: Colors.red.shade600,
-                          foregroundColor: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ],
-                    ),
+              child: Slidable(
+                key: ValueKey(playlist.key),
 
-              child: PlaylistTile(
-                playlist: playlist,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DetailList(playlist: playlist),
-                    ),
-                  );
-                },
+                endActionPane: playlist.isDefault
+                    ? null
+                    : ActionPane(
+                        motion: const StretchMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: (_) {
+                              box.delete(playlist.key);
+                            },
+                            icon: Icons.delete_outline,
+                            backgroundColor: Colors.red.shade600,
+                            foregroundColor: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ],
+                      ),
+
+                child: PlaylistTile(
+                  playlist: playlist,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailList(playlist: playlist),
+                      ),
+                    );
+                  },
+                ),
               ),
             );
           },

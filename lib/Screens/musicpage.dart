@@ -4,10 +4,12 @@ import 'package:aura_x/controller/audio_controller.dart';
 import 'package:aura_x/controller/playlist_controller.dart';
 
 import 'package:aura_x/models/playlist_model.dart';
+import 'package:aura_x/providers/rotation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart' hide PlaylistModel;
+import 'package:provider/provider.dart';
 
 class Musicpage extends StatelessWidget {
   const Musicpage({super.key});
@@ -48,7 +50,7 @@ class Musicpage extends StatelessWidget {
 
               final song = currentQueue[index];
 
-              updateDominantColor(song);
+              Future.microtask(() => updateDominantColor(song));
 
               final title = song.title.length > 40
                   ? '${song.title.substring(0, 40)}...'
@@ -64,7 +66,6 @@ class Musicpage extends StatelessWidget {
                   ),
                 ),
                 child: SingleChildScrollView(
-                  
                   child: Column(
                     children: [
                       const SizedBox(height: 16),
@@ -83,18 +84,55 @@ class Musicpage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: QueryArtworkWidget(
-                              id: song.id,
-                              type: ArtworkType.AUDIO,
-                              artworkFit: BoxFit.cover,
-                              nullArtworkWidget: Container(
-                                color: Colors.black54,
-                                child: const Icon(
-                                  Icons.music_note,
-                                  size: 90,
-                                  color: Colors.white,
+                          child: ClipOval(
+                            child: Hero(
+                              tag: song.id,
+
+                              flightShuttleBuilder:
+                                  (
+                                    context,
+                                    animation,
+                                    direction,
+                                    fromContext,
+                                    toContext,
+                                  ) {
+                                    final curved = CurvedAnimation(
+                                      parent: animation,
+                                      curve:
+                                          direction == HeroFlightDirection.push
+                                          ? Curves
+                                                .easeOutCubic 
+                                          : Curves
+                                                .easeInCubic, 
+                                    );
+
+                                    return ScaleTransition(
+                                      scale: curved,
+                                      child: toContext.widget,
+                                    );
+                                  },
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Consumer<RotationProvider>(
+                                  builder: (context, rotationProvider, child) {
+                                    return Transform.rotate(
+                                      angle: rotationProvider.angle,
+                                      child: child,
+                                    );
+                                  },
+                                  child: QueryArtworkWidget(
+                                    id: song.id,
+                                    type: ArtworkType.AUDIO,
+                                    artworkFit: BoxFit.cover,
+                                    nullArtworkWidget: Container(
+                                      color: Colors.black54,
+                                      child: const Icon(
+                                        Icons.music_note,
+                                        size: 90,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -179,6 +217,9 @@ class Musicpage extends StatelessWidget {
                         stream: audioPlayer.playerStateStream,
                         builder: (context, snapshot) {
                           final playing = snapshot.data?.playing ?? false;
+                          context.read<RotationProvider>().updatePlaying(
+                            playing,
+                          );
 
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -224,10 +265,20 @@ class Musicpage extends StatelessWidget {
                                       ? audioPlayer.pause()
                                       : audioPlayer.play();
                                 },
-                                icon: Icon(
-                                  playing ? Icons.pause : Icons.play_arrow,
-                                  size: 54,
-                                  color: Colors.white,
+                                icon: AnimatedSwitcher(
+                                  duration: Duration(milliseconds: 300),
+                                  transitionBuilder: (child, animation) {
+                                    return ScaleTransition(
+                                      scale: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Icon(
+                                    playing ? Icons.pause : Icons.play_arrow,
+                                    key: ValueKey(playing),
+                                    size: 54,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
 

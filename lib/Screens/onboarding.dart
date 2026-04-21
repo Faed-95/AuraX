@@ -11,7 +11,7 @@ class OnBoarding extends StatelessWidget {
   final PageController controller = PageController();
 
   //bool isLastPage = false;
-  var currentIndex = 0;
+  final currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {

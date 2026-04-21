@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MusicButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  final Icon icon;
+  final Widget icon;
   const MusicButton({super.key, required this.onPressed, required this.icon});
 
   @override

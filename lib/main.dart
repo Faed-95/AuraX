@@ -5,6 +5,7 @@ import 'package:aura_x/providers/detaillist_provider.dart';
 import 'package:aura_x/providers/home_provider.dart';
 import 'package:aura_x/providers/init_provider.dart';
 import 'package:aura_x/providers/onboarding_provider.dart';
+import 'package:aura_x/providers/rotation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -44,6 +45,7 @@ void main() async {
         ChangeNotifierProvider(create: (context)=>InitProvider()),
         ChangeNotifierProvider(create: (context)=>DetailProvider()),
         ChangeNotifierProvider(create: (context)=>OnBoardingProvider()),
+        ChangeNotifierProvider(create: (context)=>RotationProvider()),
         
       ],
       child: MyApp(showOnBoarding: showOnBoarding),

@@ -1,7 +1,7 @@
 import 'package:aura_x/Screens/musicpage.dart';
+import 'package:aura_x/Screens/widget/animated_tile.dart';
 import 'package:aura_x/Screens/widget/maintile.dart';
 import 'package:aura_x/controller/audio_controller.dart';
-import 'package:aura_x/controller/song.dart';
 import 'package:aura_x/providers/init_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -58,35 +58,19 @@ class InitialPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final song = initProvider.songs[index];
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      child: MainTile(
-                        title: song.title,
-                        subtitle: song.artist ?? "Unknown Artist",
-
-                        leading: QueryArtworkWidget(
-                          id: song.id,
-                          type: ArtworkType.AUDIO,
-                          artworkWidth: 50,
-                          artworkHeight: 50,
-                          artworkBorder: BorderRadius.circular(10),
-                          nullArtworkWidget: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(
-                              Icons.music_note,
-                              color: Colors.black54,
-                            ),
+                    return TweenAnimationBuilder(
+                      tween: Tween<double>(begin: 0, end: 1),
+                      duration: Duration(milliseconds: 400 + (index * 60)),
+                      builder: (context, value, child) {
+                        return Opacity(
+                          opacity: value,
+                          child: Transform.translate(
+                            offset: Offset(0, (1 - value) * 30),
+                            child: child,
                           ),
-                        ),
-
+                        );
+                      },
+                      child: AnimatedTile(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -94,8 +78,105 @@ class InitialPage extends StatelessWidget {
                               builder: (_) => const Musicpage(),
                             ),
                           );
-                          playSongs(songs: initProvider.songs, startIndex: index);
+
+                          playSongs(
+                            songs: initProvider.songs,
+                            startIndex: index,
+                          );
                         },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          child: MainTile(
+                            title: song.title,
+                            subtitle: song.artist ?? "Unknown Artist",
+
+                            leading: Hero(
+                              tag: song.id,
+
+                              flightShuttleBuilder:
+                                  (
+                                    context,
+                                    animation,
+                                    direction,
+                                    fromContext,
+                                    toContext,
+                                  ) {
+                                    final curved = CurvedAnimation(
+                                      parent: animation,
+                                      curve:
+                                          direction == HeroFlightDirection.push
+                                          ? Curves.easeOutCubic
+                                          : Curves.easeInCubic,
+                                    );
+
+                                    return ScaleTransition(
+                                      scale: curved,
+                                      child: toContext.widget,
+                                    );
+                                  },
+                              child: QueryArtworkWidget(
+                                id: song.id,
+                                type: ArtworkType.AUDIO,
+                                artworkWidth: 50,
+                                artworkHeight: 50,
+                                artworkBorder: BorderRadius.circular(10),
+                                nullArtworkWidget: Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade300,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.music_note,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder:
+                                      (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                      ) => const Musicpage(),
+                                  transitionsBuilder:
+                                      (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                        child,
+                                      ) {
+                                        return FadeTransition(
+                                          opacity: CurvedAnimation(
+                                            parent: animation,
+                                            curve: Curves.easeInOutCubic,
+                                            reverseCurve: Curves.easeInCubic,
+                                          ),
+                                          child: child,
+                                        );
+                                      },
+                                  transitionDuration: Duration(
+                                    milliseconds: 500,
+                                  ),
+                                reverseTransitionDuration: Duration(milliseconds: 600)
+                                ),
+                              );
+                              playSongs(
+                                songs: initProvider.songs,
+                                startIndex: index,
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     );
                   },

@@ -51,9 +51,12 @@ class HomePageState extends State<HomePage> {
     }
 
     void addPlayList() {
-      showDialog(
+      showGeneralDialog(
         context: context,
-        builder: (ctx) {
+        barrierDismissible: true,
+        barrierLabel: '',
+        transitionDuration: Duration(milliseconds: 300),
+        pageBuilder: (ctx,animation1,animation2) {
           return Form(
             key: formKey,
             child: AlertDialog(
@@ -88,6 +91,12 @@ class HomePageState extends State<HomePage> {
                 ),
               ],
             ),
+          );
+        },
+        transitionBuilder: (context, animation, secondaryAnimation, child) {
+          return Transform.scale(
+            scale: animation.value,
+            child: Opacity(opacity: animation.value,child: child,),
           );
         },
       );
@@ -169,10 +178,20 @@ class HomePageState extends State<HomePage> {
                       final playing = snapshot.data?.playing ?? false;
 
                       return IconButton(
-                        icon: Icon(
-                          playing ? Icons.pause : Icons.play_arrow,
-                          color: Colors.deepPurple,
-                          size: 30,
+                        icon: AnimatedSwitcher(
+                          duration: Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return ScaleTransition(
+                              scale: animation,
+                              child: child,
+                            );
+                          },
+                          child: Icon(
+                            playing ? Icons.pause : Icons.play_arrow,
+                            key: ValueKey(playing),
+                            size: 35,
+                            color: Colors.white,
+                          ),
                         ),
                         onPressed: () {
                           playing ? audioPlayer.pause() : audioPlayer.play();
@@ -184,7 +203,24 @@ class HomePageState extends State<HomePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const Musicpage()),
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const Musicpage(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: Tween(
+                                    begin: Offset(0, .2),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                ),
+                              );
+                            },
+                        transitionDuration: Duration(microseconds: 300),
+                      ),
                     );
                   },
                 ),
